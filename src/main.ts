@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import { regexCheck } from './regex-check'
+import { Octokit } from '@octokit/action'
 
 /**
  * The main function for the action.
@@ -7,20 +8,18 @@ import { regexCheck } from './regex-check'
  */
 export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-
+    const octokit = new Octokit({ auth: core.getInput('gh-token') })
     // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const { data } = await octokit.rest.actions.downloadWorkflowRunLogs({
+      owner: core.getInput('repo-owner'),
+      repo: core.getInput('repo-name'),
+      run_id: parseInt(core.getInput('run-id'))
+    })
+    core.debug(JSON.stringify(data))
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    if (regexCheck('test', 'test')) {
-      core.setFailed('failure test matched')
+    if (regexCheck(core.getInput('error-regex'), data as string)) {
+      core.setFailed('Found error in build log')
     }
-    core.debug(new Date().toTimeString())
-
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)

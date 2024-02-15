@@ -9,10 +9,25 @@ branding:
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  error-regex:
     required: true
-    default: '1000'
+    description: 'Regex to identify errors'
+  gh-token:
+    required: false
+    description: 'Github repo token'
+    default: ${{ secrets.GITHUB_TOKEN }}
+  run-id:
+    required: false
+    description: 'Github run ID'
+    default: ${{ github.run_id }}
+  repo-owner:
+    required: false
+    description: 'Repo owner for GitHub api calls'
+    default: ${{ github.repository_owner }}
+  repo-name:
+    required: false
+    description: 'Repo name for GitHub api calls'
+    default: ${{ github.repository }}
 
 # Define your outputs here.
 outputs:
