@@ -8,15 +8,23 @@ import { Octokit } from '@octokit/action'
  */
 export async function run(): Promise<void> {
   try {
-    core.debug(`run-id${core.getInput('')}`)
+    core.debug(`run-id${core.getInput('run-id')}`)
     const run_id = parseInt(core.getInput('run-id'))
-    const octokit = new Octokit()
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    const { data } = await octokit.rest.actions.downloadWorkflowRunLogs({
-      owner: core.getInput('repo-owner'),
-      repo: core.getInput('repo-name'),
-      run_id
+    const octokit = new Octokit({
+      auth: core.getInput('token')
     })
+
+    const { data } = await octokit.request(
+      'GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs',
+      {
+        owner: core.getInput('repo-owner'),
+        repo: core.getInput('repo-name'),
+        run_id,
+        headers: {
+          'X-GitHub-Api-Version': '2022-11-28'
+        }
+      }
+    ) // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
     core.debug(JSON.stringify(data))
 
     if (regexCheck(core.getInput('error-regex'), data as string)) {

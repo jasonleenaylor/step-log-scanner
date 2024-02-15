@@ -30860,15 +30860,19 @@ const action_1 = __nccwpck_require__(1231);
  */
 async function run() {
     try {
-        core.debug(`run-id${core.getInput('')}`);
+        core.debug(`run-id${core.getInput('run-id')}`);
         const run_id = parseInt(core.getInput('run-id'));
-        const octokit = new action_1.Octokit();
-        // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-        const { data } = await octokit.rest.actions.downloadWorkflowRunLogs({
+        const octokit = new action_1.Octokit({
+            auth: core.getInput('token')
+        });
+        const { data } = await octokit.request('GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs', {
             owner: core.getInput('repo-owner'),
             repo: core.getInput('repo-name'),
-            run_id
-        });
+            run_id,
+            headers: {
+                'X-GitHub-Api-Version': '2022-11-28'
+            }
+        }); // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
         core.debug(JSON.stringify(data));
         if ((0, regex_check_1.regexCheck)(core.getInput('error-regex'), data)) {
             core.setFailed('Found error in build log');
