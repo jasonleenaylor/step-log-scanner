@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import { wait } from './wait'
+import { regexCheck } from './regex-check'
 
 /**
  * The main function for the action.
@@ -14,7 +14,9 @@ export async function run(): Promise<void> {
 
     // Log the current timestamp, wait, then log the new timestamp
     core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
+    if (regexCheck('test', 'test')) {
+      core.setFailed('failure test matched')
+    }
     core.debug(new Date().toTimeString())
 
     // Set outputs for other workflow steps to use

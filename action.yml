@@ -1,10 +1,10 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Github Action Step Log Scanner'
+description: 'Scan the logs of previous steps and fail on matched strings'
+author: 'Jason Naylor'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: 'heart'
+  icon: 'check'
   color: 'red'
 
 # Define your inputs here.
