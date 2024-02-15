@@ -1,23 +1,20 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'Github Action Step Log Scanner'
+description: 'Scan the logs of previous steps and fail on matched strings'
+author: 'Jason Naylor'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
-  icon: 'heart'
+  icon: 'check'
   color: 'red'
 
 # Define your inputs here.
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  error-regex:
     required: true
-    default: '1000'
-
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Your output description here'
+    description: 'Regex to identify errors'
+  log-text:
+    required: true  
+    description: 'Log text to search (captured from previous steps)'
 
 runs:
   using: node20
