@@ -30860,12 +30860,14 @@ const action_1 = __nccwpck_require__(1231);
  */
 async function run() {
     try {
+        core.debug(`run-id${core.getInput('')}`);
+        const run_id = parseInt(core.getInput('run-id'));
         const octokit = new action_1.Octokit();
         // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
         const { data } = await octokit.rest.actions.downloadWorkflowRunLogs({
             owner: core.getInput('repo-owner'),
             repo: core.getInput('repo-name'),
-            run_id: parseInt(core.getInput('run-id'))
+            run_id
         });
         core.debug(JSON.stringify(data));
         if ((0, regex_check_1.regexCheck)(core.getInput('error-regex'), data)) {
