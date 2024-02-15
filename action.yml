@@ -12,9 +12,9 @@ inputs:
   error-regex:
     required: true
     description: 'Regex to identify errors'
-  gh-token:
+  token:
     required: true
-    description: 'Github repo token'
+    description: 'Github token'
   run-id:
     required: false
     description: 'Github run ID'

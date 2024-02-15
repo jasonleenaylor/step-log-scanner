@@ -30860,7 +30860,7 @@ const action_1 = __nccwpck_require__(1231);
  */
 async function run() {
     try {
-        const octokit = new action_1.Octokit({ auth: core.getInput('gh-token') });
+        const octokit = new action_1.Octokit();
         // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
         const { data } = await octokit.rest.actions.downloadWorkflowRunLogs({
             owner: core.getInput('repo-owner'),

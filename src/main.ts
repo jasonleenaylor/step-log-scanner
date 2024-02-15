@@ -8,7 +8,7 @@ import { Octokit } from '@octokit/action'
  */
 export async function run(): Promise<void> {
   try {
-    const octokit = new Octokit({ auth: core.getInput('gh-token') })
+    const octokit = new Octokit()
     // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
     const { data } = await octokit.rest.actions.downloadWorkflowRunLogs({
       owner: core.getInput('repo-owner'),
