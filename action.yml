@@ -13,9 +13,8 @@ inputs:
     required: true
     description: 'Regex to identify errors'
   gh-token:
-    required: false
+    required: true
     description: 'Github repo token'
-    default: ${{ secrets.GITHUB_TOKEN }}
   run-id:
     required: false
     description: 'Github run ID'
