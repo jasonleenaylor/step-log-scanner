@@ -15,10 +15,11 @@ export async function run(): Promise<void> {
     })
 
     const { data } = await octokit.request(
-      'GET /repos/{owner}/{repo}/actions/runs/{run_id}/logs',
+      'GET /repos/{owner}/{repo}/actions/workflows/{workflow_id}/runs/{run_id}',
       {
         owner: core.getInput('repo-owner'),
         repo: core.getInput('repo-name'),
+        workflow_id: core.getInput('workflow-id'),
         run_id,
         headers: {
           'X-GitHub-Api-Version': '2022-11-28'
@@ -26,10 +27,7 @@ export async function run(): Promise<void> {
       }
     ) // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
     core.debug(JSON.stringify(data))
-
-    if (regexCheck(core.getInput('error-regex'), data as string)) {
-      core.setFailed('Found error in build log')
-    }
+    regexCheck(core.getInput('error-regex'), JSON.stringify(data))
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)

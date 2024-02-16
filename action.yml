@@ -19,6 +19,10 @@ inputs:
     required: false
     description: 'Github run ID'
     default: ${{ github.run_id }}
+  workflow-id:
+    required: false
+    description: 'Github workflow ID'
+    default: ${{ github.workflow_id }}
   repo-owner:
     required: false
     description: 'Repo owner for GitHub api calls'
