@@ -12,30 +12,9 @@ inputs:
   error-regex:
     required: true
     description: 'Regex to identify errors'
-  token:
-    required: true
-    description: 'Github token'
-  run-id:
-    required: false
-    description: 'Github run ID'
-    default: ${{ github.run_id }}
-  workflow-id:
-    required: false
-    description: 'Github workflow ID'
-    default: ${{ github.workflow_id }}
-  repo-owner:
-    required: false
-    description: 'Repo owner for GitHub api calls'
-    default: ${{ github.repository_owner }}
-  repo-name:
-    required: false
-    description: 'Repo name for GitHub api calls'
-    default: ${{ github.repository }}
-
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Your output description here'
+  log-text:
+    required: true  
+    description: 'Log text to search (captured from previous steps)'
 
 runs:
   using: node20
