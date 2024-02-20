@@ -1,5 +1,5 @@
-name: 'Github Action Step Log Scanner'
-description: 'Scan the logs of previous steps and fail on matched strings'
+name: 'NUnitReport Github Integration'
+description: 'Parse the results of FieldWorks Unit tests and report them in GitHub'
 author: 'Jason Naylor'
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
@@ -9,12 +9,12 @@ branding:
 
 # Define your inputs here.
 inputs:
-  error-regex:
-    required: true
-    description: 'Regex to identify errors'
-  log-text:
+  log-path:
     required: true  
-    description: 'Log text to search (captured from previous steps)'
+    description: 'Log file (captured from previous steps)'
+  token:
+    required: true
+    description: 'Github token sufficient to run checks'
 
 runs:
   using: node20

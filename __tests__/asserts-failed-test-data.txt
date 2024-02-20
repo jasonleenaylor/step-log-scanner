@@ -1,0 +1,27 @@
+*************************************************
+NUnit report for FwUtilsTests.dll:
+*************************************************
+Failures: 2    Ignored: 7    Passed: 294
+*************************************************
+*************************************************
+Equals_ExactlyTheSame FAILED in 0.048 secs.
+*************************************************
+  Expected: False
+  But was:  True
+
+   at SIL.FieldWorks.Common.FwUtils.FwLinkArgsTests.Equals_ExactlyTheSame() in C:\Repositories\fwroot\fw\Src\Common\FwUtils\FwUtilsTests\FwLinkArgsTests.cs:line 30
+
+*************************************************
+Equals_SameObject FAILED in 0.001 secs.
+*************************************************
+  Expected: False
+  But was:  True
+
+   at SIL.FieldWorks.Common.FwUtils.FwLinkArgsTests.Equals_SameObject() in C:\Repositories\fwroot\fw\Src\Common\FwUtils\FwUtilsTests\FwLinkArgsTests.cs:line 43
+
+
+*************************************************
+NUnit report for testGenericLib:
+*************************************************
+Failures: 0    Ignored: 0    Passed: 30
+*************************************************
