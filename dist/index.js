@@ -28972,42 +28972,42 @@ const test_results_parser_1 = __importDefault(__nccwpck_require__(6697));
  */
 async function run() {
     try {
-        const octokit = github.getOctokit(core.getInput('token'));
+        const octokit = github.getOctokit(core.getInput("token"));
         const runContext = getRunContextForCheck();
         const createCheckResponse = await octokit.rest.checks.create({
             head_sha: runContext.head_sha,
-            name: 'Unit Test Results',
-            status: 'in_progress',
+            name: "Unit Test Results",
+            status: "in_progress",
             output: {
-                title: 'Unit Test Results',
-                summary: ''
+                title: "Unit Test Results",
+                summary: "",
             },
-            ...github.context.repo
+            ...github.context.repo,
         });
-        const testResultsText = fs.readFileSync(core.getInput('log-path'), 
+        const testResultsText = fs.readFileSync(core.getInput("log-path"), 
         // BufferEncoding is global so the no-undef lint error is bogus
         // eslint-disable-next-line no-undef
-        core.getInput('encoding'));
+        core.getInput("encoding"));
         const testResults = (0, test_results_parser_1.default)(testResultsText);
         console.log(JSON.stringify(testResults));
         await octokit.rest.checks.update({
             check_run_id: createCheckResponse.data.id,
-            conclusion: testResults.results.every(t => t.failures === 0)
-                ? 'success'
-                : 'failure',
-            status: 'completed',
+            conclusion: testResults.results.every((t) => t.failures === 0)
+                ? "success"
+                : "failure",
+            status: "completed",
             output: {
                 title: generateShortSummaryFromResults(testResults),
                 summary: generateSummaryFromResults(testResults),
-                annotations: generateAnnotationsFromResults(testResults)
+                annotations: generateAnnotationsFromResults(testResults),
             },
-            ...github.context.repo
+            ...github.context.repo,
         });
-        if (testResults.results.every(t => t.failures === 0)) {
-            core.info('All tests passed!');
+        if (testResults.results.every((t) => t.failures === 0)) {
+            core.info("All tests passed!");
         }
         else {
-            core.setFailed('Some unit tests failed.');
+            core.setFailed("Some unit tests failed.");
         }
     }
     catch (error) {
@@ -29018,14 +29018,14 @@ async function run() {
 }
 exports.run = run;
 function getRunContextForCheck() {
-    if (github.context.eventName === 'workflow_run') {
+    if (github.context.eventName === "workflow_run") {
         const event = github.context.payload;
         if (!event.workflow_run) {
-            throw new Error('Unexpected event contents, workflow_run missing?');
+            throw new Error("Unexpected event contents, workflow_run missing?");
         }
         return {
             head_sha: event.workflow_run.head_commit.id,
-            runId: event.workflow_run.id
+            runId: event.workflow_run.id,
         };
     }
     const runId = github.context.runId;
@@ -29047,8 +29047,8 @@ function generateShortSummaryFromResults(testResults) {
 exports.generateShortSummaryFromResults = generateShortSummaryFromResults;
 function generateSummaryFromResults(testResults) {
     return testResults.results
-        .map(tr => `${tr.fixture}: ${tr.passed} Passed, ${tr.failures} Failed, ${tr.ignored} Ignored`)
-        .join('\n');
+        .map((tr) => `${tr.fixture}: ${tr.passed} Passed, ${tr.failures} Failed, ${tr.ignored} Ignored`)
+        .join("\n");
 }
 exports.generateSummaryFromResults = generateSummaryFromResults;
 function generateAnnotationsFromResults(testResults) {
@@ -29061,7 +29061,7 @@ function generateAnnotationsFromResults(testResults) {
                     start_line: failure.lineInfo,
                     end_line: failure.lineInfo,
                     message: `${result.fixture}: ${failure.unitName} failed.`,
-                    annotation_level: 'failure'
+                    annotation_level: "failure",
                 });
             }
         }
@@ -29107,7 +29107,7 @@ class FailureDetailInstance {
     }
 }
 function parseTestResults(text) {
-    const lines = text.split('\n');
+    const lines = text.split("\n");
     const testResults = [];
     const initialFixtureLine = /^NUnit report for (.+):/u;
     const summaryLine = /Failures: (\d+) {4}Ignored: (\d+) {4}Passed: (\d+)/u;
@@ -29142,7 +29142,7 @@ function parseTestResults(text) {
         if (result.failures) {
             const unitFailed = line.match(unitFailedLine);
             if (unitFailed) {
-                if (currentFailure.unitName !== '') {
+                if (currentFailure.unitName !== "") {
                     result.failureDetails.push(currentFailure);
                     currentFailure = new FailureDetailInstance();
                 }
@@ -29163,7 +29163,7 @@ function parseTestResults(text) {
             }
         }
     }
-    if (currentFailure.unitName !== '') {
+    if (currentFailure.unitName !== "") {
         result?.failureDetails.push(currentFailure);
     }
     if (result)
