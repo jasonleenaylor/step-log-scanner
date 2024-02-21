@@ -28972,7 +28972,7 @@ const test_results_parser_1 = __importDefault(__nccwpck_require__(6697));
  */
 async function run() {
     try {
-        const octokit = github.getOctokit(core.getInput('toekn'));
+        const octokit = github.getOctokit(core.getInput('token'));
         const runContext = getRunContextForCheck();
         const createCheckResponse = await octokit.rest.checks.create({
             head_sha: runContext.head_sha,

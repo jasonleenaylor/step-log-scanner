@@ -9,7 +9,7 @@ import parseTestResults, { TestResults } from './test-results-parser'
  */
 export async function run(): Promise<void> {
   try {
-    const octokit = github.getOctokit(core.getInput('toekn'))
+    const octokit = github.getOctokit(core.getInput('token'))
     const runContext = getRunContextForCheck()
     const createCheckResponse = await octokit.rest.checks.create({
       head_sha: runContext.head_sha,
