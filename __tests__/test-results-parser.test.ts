@@ -75,4 +75,41 @@ describe('parse test results', () => {
 
     expect(parsedData.results[0].failureDetails).toEqual(expectedFailureDetails)
   })
+
+  test('should parse log with c++ assertion failures', () => {
+    const text = fs.readFileSync(
+      './__tests__/cplusplus-failed-test-data.txt',
+      'utf-8'
+    )
+    const parsedData: TestResults | null = parseTestResults(text)
+
+    expect(parsedData).not.toBeNull()
+    expect(parsedData.results[0].fixture).toBe('testViews')
+    expect(parsedData.results[0].failures).toBe(3)
+    expect(parsedData.results[0].ignored).toBe(0)
+    expect(parsedData.results[0].passed).toBe(272)
+
+    const expectedFailureDetails: FailureDetail[] = [
+      {
+        unitName: 'SuperscriptGraphite',
+        fileName:
+          'D:\\a\\FieldWorks\\FieldWorks\\Src\\Views\\Test\\TestVwGraphics.h',
+        lineInfo: 72
+      },
+      {
+        unitName: 'SubscriptGraphite',
+        fileName:
+          'D:\\a\\FieldWorks\\FieldWorks\\Src\\Views\\Test\\TestVwGraphics.h',
+        lineInfo: 269
+      },
+      {
+        unitName: 'BreakPointing',
+        fileName:
+          'D:\\a\\FieldWorks\\FieldWorks\\Src\\Views\\Test\\RenderEngineTestBase.h',
+        lineInfo: 451
+      }
+    ]
+
+    expect(parsedData.results[0].failureDetails).toEqual(expectedFailureDetails)
+  })
 })

@@ -1,0 +1,33 @@
+*************************************************
+NUnit report for testViews:
+*************************************************
+Failures: 3    Ignored: 0    Passed: 272
+*************************************************
+*************************************************
+SuperscriptGraphite FAILED in 0 secs.
+*************************************************
+ SILDoulos PigLatinDemo font must be installed [assertion failed]
+
+
+D:\a\FieldWorks\FieldWorks\Src\Views\Test\TestVwGraphics.h:72
+*************************************************
+SubscriptGraphite FAILED in 0 secs.
+*************************************************
+ SILDoulos PigLatinDemo font must be installed [assertion failed]
+
+
+D:\a\FieldWorks\FieldWorks\Src\Views\Test\TestVwGraphics.h:269
+*************************************************
+BreakPointing FAILED in 0 secs.
+*************************************************
+ FindBreakPoint(Short string) HRESULT [expected: `0' got: `-2147467259']
+
+
+D:\a\FieldWorks\FieldWorks\Src\Views\Test\RenderEngineTestBase.h:451
+ 
+*********************************************************
+NUnit Summary report:
+44 test project(s)   Passed: 4525  Ignored: 171  Failures: 3 in 329.837 seconds.
+Project testViews
+    had 3 test failures.
+*********************************************************

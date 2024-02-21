@@ -46,17 +46,17 @@ class FailureDetailInstance implements FailureDetail {
 }
 
 export function parseTestResults(text: string): TestResults {
-  const lines = text.split('\r\n')
+  const lines = text.split('\n')
   const testResults: TestResult[] = []
-  const initialFixtureLine = /^NUnit report for (.+):/
-  const summaryLine = /Failures: (\d+) {4}Ignored: (\d+) {4}Passed: (\d+)/
-  const unitFailedLine = /(.*) FAILED in \d\.\d{3} secs\./
-  const exceptionLine = /(?:\s+at.*in )(.*)(?::line )(\d+)/
+  const initialFixtureLine = /^NUnit report for (.+):/u
+  const summaryLine = /Failures: (\d+) {4}Ignored: (\d+) {4}Passed: (\d+)/u
+  const unitFailedLine = /(.*) FAILED in \d+\.?\d* secs\./u
+  const exceptionLine = /(?:\s+at.*in )(.*)(?::line )(\d+)/u
+  const unitPlusPlusLine = /(.*\.h):(\d+)/
   let result: TestResult | undefined = undefined
   let currentFailure = new FailureDetailInstance()
   // Find the beginning of the report for the fixture
   for (const line of lines) {
-    console.log(line)
     const initMatch = line.match(initialFixtureLine)
     if (initMatch) {
       if (result) {
@@ -85,6 +85,7 @@ export function parseTestResults(text: string): TestResults {
           currentFailure = new FailureDetailInstance()
         }
         currentFailure.unitName = unitFailed[1]
+        continue
       }
       const exceptionMatch = line.match(exceptionLine)
       if (exceptionMatch) {
@@ -92,7 +93,16 @@ export function parseTestResults(text: string): TestResults {
         currentFailure.lineInfo = parseInt(exceptionMatch[2])
         continue
       }
+      const unitFailure = line.match(unitPlusPlusLine)
+      if (unitFailure) {
+        currentFailure.fileName = unitFailure[1]
+        currentFailure.lineInfo = parseInt(unitFailure[2])
+        continue
+      }
     }
+  }
+  if (currentFailure.unitName !== '') {
+    result?.failureDetails.push(currentFailure)
   }
   if (result) testResults.push(result)
 

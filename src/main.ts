@@ -21,7 +21,10 @@ export async function run(): Promise<void> {
       },
       ...github.context.repo
     })
-    const testResultsText = fs.readFileSync(core.getInput('log-path'), 'utf8')
+    const testResultsText = fs.readFileSync(
+      core.getInput('log-path'),
+      'utf-16le'
+    )
     const testResults = parseTestResults(testResultsText)
     await octokit.rest.checks.update({
       check_run_id: createCheckResponse.data.id,
