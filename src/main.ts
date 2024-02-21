@@ -23,9 +23,12 @@ export async function run(): Promise<void> {
     })
     const testResultsText = fs.readFileSync(
       core.getInput('log-path'),
-      'utf-16le'
+      // BufferEncoding is global so the no-undef lint error is bogus
+      // eslint-disable-next-line no-undef
+      core.getInput('encoding') as BufferEncoding
     )
     const testResults = parseTestResults(testResultsText)
+    console.log(JSON.stringify(testResults))
     await octokit.rest.checks.update({
       check_run_id: createCheckResponse.data.id,
       conclusion: testResults.results.every(t => t.failures === 0)
@@ -39,6 +42,11 @@ export async function run(): Promise<void> {
       },
       ...github.context.repo
     })
+    if (testResults.results.every(t => t.failures === 0)) {
+      core.info('All tests passed!')
+    } else {
+      core.setFailed('Some unit tests failed.')
+    }
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
@@ -66,7 +74,9 @@ function getRunContextForCheck(): { head_sha: string; runId: number } {
   return { head_sha: github.context.sha, runId }
 }
 
-function generateShortSummaryFromResults(testResults: TestResults): string {
+export function generateShortSummaryFromResults(
+  testResults: TestResults
+): string {
   const summaryResults = testResults.results.reduce<{
     passed: number
     ignored: number
@@ -82,7 +92,7 @@ function generateShortSummaryFromResults(testResults: TestResults): string {
   )
   return `Unit Test Results (${summaryResults.passed} passed, ${summaryResults.failed} failed, ${summaryResults.ignored} ignored)`
 }
-function generateSummaryFromResults(testResults: TestResults): string {
+export function generateSummaryFromResults(testResults: TestResults): string {
   return testResults.results
     .map(
       tr =>
@@ -91,7 +101,7 @@ function generateSummaryFromResults(testResults: TestResults): string {
     .join('\n')
 }
 
-function generateAnnotationsFromResults(testResults: TestResults):
+export function generateAnnotationsFromResults(testResults: TestResults):
   | {
       path: string
       start_line: number

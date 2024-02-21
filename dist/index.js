@@ -28961,7 +28961,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.run = void 0;
+exports.generateAnnotationsFromResults = exports.generateSummaryFromResults = exports.generateShortSummaryFromResults = exports.run = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const fs = __importStar(__nccwpck_require__(7147));
 const github = __importStar(__nccwpck_require__(5438));
@@ -28984,8 +28984,12 @@ async function run() {
             },
             ...github.context.repo
         });
-        const testResultsText = fs.readFileSync(core.getInput('log-path'), 'utf-16le');
+        const testResultsText = fs.readFileSync(core.getInput('log-path'), 
+        // BufferEncoding is global so the no-undef lint error is bogus
+        // eslint-disable-next-line no-undef
+        core.getInput('encoding'));
         const testResults = (0, test_results_parser_1.default)(testResultsText);
+        console.log(JSON.stringify(testResults));
         await octokit.rest.checks.update({
             check_run_id: createCheckResponse.data.id,
             conclusion: testResults.results.every(t => t.failures === 0)
@@ -28999,6 +29003,12 @@ async function run() {
             },
             ...github.context.repo
         });
+        if (testResults.results.every(t => t.failures === 0)) {
+            core.info('All tests passed!');
+        }
+        else {
+            core.setFailed('Some unit tests failed.');
+        }
     }
     catch (error) {
         // Fail the workflow run if an error occurs
@@ -29034,11 +29044,13 @@ function generateShortSummaryFromResults(testResults) {
     }, { passed: 0, ignored: 0, failed: 0 });
     return `Unit Test Results (${summaryResults.passed} passed, ${summaryResults.failed} failed, ${summaryResults.ignored} ignored)`;
 }
+exports.generateShortSummaryFromResults = generateShortSummaryFromResults;
 function generateSummaryFromResults(testResults) {
     return testResults.results
         .map(tr => `${tr.fixture}: ${tr.passed} Passed, ${tr.failures} Failed, ${tr.ignored} Ignored`)
         .join('\n');
 }
+exports.generateSummaryFromResults = generateSummaryFromResults;
 function generateAnnotationsFromResults(testResults) {
     const annotations = [];
     for (const result of testResults.results) {
@@ -29056,6 +29068,7 @@ function generateAnnotationsFromResults(testResults) {
     }
     return annotations;
 }
+exports.generateAnnotationsFromResults = generateAnnotationsFromResults;
 
 
 /***/ }),

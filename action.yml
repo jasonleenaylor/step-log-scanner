@@ -15,7 +15,10 @@ inputs:
   token:
     required: true
     description: 'Github token sufficient to run checks'
-
+  encoding:
+    required: false
+    description: 'Log file encoding'
+    default: 'utf-16le'
 runs:
   using: node20
   main: dist/index.js
