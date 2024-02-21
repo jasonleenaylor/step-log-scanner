@@ -55,8 +55,6 @@ jobs:
         id: test-action
         uses: ./
         with:
-          milliseconds: 2000
-
-      - name: Print Output
-        id: output
-        run: echo "${{ steps.test-action.outputs.time }}"
+          log-path: __tests__/success-test-data.txt
+          token: ${{ secrets.GITHUB_TOKEN }}
+          encoding: "utf-8"
