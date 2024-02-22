@@ -29093,9 +29093,8 @@ class TestResultInstance {
     ignored;
     passed;
     failureDetails;
-    // prettier-ignore
     constructor() {
-        this.fixture = '';
+        this.fixture = "";
         this.failures = 0;
         this.ignored = 0;
         this.passed = 0;
@@ -29106,10 +29105,9 @@ class FailureDetailInstance {
     unitName;
     fileName;
     lineInfo;
-    // prettier-ignore
     constructor() {
-        this.unitName = '';
-        this.fileName = '';
+        this.unitName = "";
+        this.fileName = "";
         this.lineInfo = 0;
     }
 }

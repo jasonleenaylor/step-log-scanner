@@ -101,26 +101,22 @@ export function generateSummaryFromResults(testResults: TestResults): string {
     .join("\n");
 }
 
-export function generateAnnotationsFromResults(testResults: TestResults):
-  | {
-      path: string;
-      start_line: number;
-      end_line: number;
-      start_column?: number | undefined;
-      end_column?: number | undefined;
-      annotation_level: "failure" | "notice" | "warning";
-      message: string;
-      title?: string | undefined;
-      raw_details?: string | undefined;
-    }[]
-  | undefined {
-  const annotations: {
-    path: string;
-    start_line: number;
-    end_line: number;
-    annotation_level: "failure" | "notice" | "warning";
-    message: string;
-  }[] = [];
+type GithubAnnotation = {
+  path: string;
+  start_line: number;
+  end_line: number;
+  start_column?: number;
+  end_column?: number;
+  annotation_level: "failure" | "notice" | "warning";
+  message: string;
+  title?: string;
+  raw_details?: string;
+};
+
+export function generateAnnotationsFromResults(
+  testResults: TestResults,
+): GithubAnnotation[] | undefined {
+  const annotations: GithubAnnotation[] = [];
   for (const result of testResults.results) {
     if (result.failures > 0) {
       for (const failure of result.failureDetails) {

@@ -23,13 +23,12 @@ class TestResultInstance implements TestResult {
   passed: number;
   failureDetails: FailureDetail[];
 
-  // prettier-ignore
   constructor() {
-    this.fixture = ''
-    this.failures = 0
-    this.ignored = 0
-    this.passed = 0
-    this.failureDetails = []
+    this.fixture = "";
+    this.failures = 0;
+    this.ignored = 0;
+    this.passed = 0;
+    this.failureDetails = [];
   }
 }
 
@@ -37,11 +36,10 @@ class FailureDetailInstance implements FailureDetail {
   unitName: string;
   fileName: string;
   lineInfo: number;
-  // prettier-ignore
   constructor() {
-    this.unitName = ''
-    this.fileName = ''
-    this.lineInfo = 0
+    this.unitName = "";
+    this.fileName = "";
+    this.lineInfo = 0;
   }
 }
 

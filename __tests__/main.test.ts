@@ -17,14 +17,8 @@ jest.mock("@actions/github", () => ({
     return {
       rest: {
         checks: {
-          update: () => {
-            return;
-          },
-          create: () => {
-            return {
-              data: { id: 1 },
-            };
-          },
+          update: () => {},
+          create: () => ({ data: { id: 1 } }),
         },
       },
     };
@@ -97,7 +91,7 @@ describe("action", () => {
 
 describe("generate summaries", () => {
   it("generates correct short summary", () => {
-    const results = main.generateShortSummaryFromResults({
+    const summary = main.generateShortSummaryFromResults({
       results: [
         {
           passed: 1,
@@ -108,12 +102,12 @@ describe("generate summaries", () => {
         },
       ],
     });
-    expect(results).toContain("1 passed");
-    expect(results).toContain("2 failed");
-    expect(results).toContain("3 ignored");
+    expect(summary).toContain("1 passed");
+    expect(summary).toContain("2 failed");
+    expect(summary).toContain("3 ignored");
   });
   it("generates correct full summary from results", () => {
-    const results = main.generateSummaryFromResults({
+    const summary = main.generateSummaryFromResults({
       results: [
         {
           passed: 1,
@@ -131,11 +125,11 @@ describe("generate summaries", () => {
         },
       ],
     });
-    expect(results).toContain("test: 1 Passed, 0 Failed, 3 Ignored");
-    expect(results).toContain("FailFixture: 0 Passed, 1 Failed, 0 Ignored");
+    expect(summary).toContain("test: 1 Passed, 0 Failed, 3 Ignored");
+    expect(summary).toContain("FailFixture: 0 Passed, 1 Failed, 0 Ignored");
   });
   it("generates Annotations from results", () => {
-    const results = main.generateAnnotationsFromResults({
+    const annotations = main.generateAnnotationsFromResults({
       results: [
         {
           passed: 1,
@@ -155,12 +149,12 @@ describe("generate summaries", () => {
         },
       ],
     });
-    expect(results).not.toBeUndefined();
-    expect(results?.length).toEqual(1);
-    expect(results?.[0].start_line).toEqual(1);
-    expect(results?.[0].path).toEqual("./test.h");
-    expect(results?.[0].annotation_level).toEqual("failure");
-    expect(results?.[0].message).toEqual("FailFixture: failUnit failed.");
+    expect(annotations).not.toBeUndefined();
+    expect(annotations?.length).toEqual(1);
+    expect(annotations?.[0].start_line).toEqual(1);
+    expect(annotations?.[0].path).toEqual("./test.h");
+    expect(annotations?.[0].annotation_level).toEqual("failure");
+    expect(annotations?.[0].message).toEqual("FailFixture: failUnit failed.");
   });
   it("generates trimmed annotations", () => {
     const results = main.generateAnnotationsFromResults({
