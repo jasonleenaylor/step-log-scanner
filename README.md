@@ -1,9 +1,7 @@
 # FieldWorks NUnitReport results publisher action
-
-[![GitHub Super-Linter](https://github.com/sillsdev/fw-nunitreport-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
-![CI](https://github.com/sillsdev/fw-nunitreport-action/actions/workflows/ci.yml/badge.svg)
-[![Check dist/](https://github.com/sillsdev/fw-nunitreport-action/actions/workflows/check-dist.yml/badge.svg)](https://github.com/sillsdev/fw-nunitreport-action/actions/workflows/check-dist.yml)
-[![CodeQL](https://github.com/sillsdev/fw-nunitreport-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/sillsdev/fw-nunitreport-action/actions/workflows/codeql-analysis.yml)
+[![GitHub Super-Linter](https://github.com/jasonleenaylor/fw-nunitreport-action/actions/workflows/linter.yml/badge.svg)](https://github.com/jasonleenaylor/fw-nunitreport-action/actions/workflows/linter.yml)
+[![Continuous Integration](https://github.com/jasonleenaylor/fw-nunitreport-action/actions/workflows/ci.yml/badge.svg)](https://github.com/jasonleenaylor/fw-nunitreport-action/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/jasonleenaylor/fw-nunitreport-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/jasonleenaylor/fw-nunitreport-action/actions/workflows/codeql-analysis.yml)
 [![Coverage](./badges/coverage.svg)](./badges/coverage.svg)
 
 ## Initial Setup
@@ -95,9 +93,9 @@ steps:
     id: test-result-action
     uses: sillsdev/fw-nunitreport-action@v1 # Commit with the `v1` tag
     with:
-	  log-path: /path/to/nunitreporteroutput
+      log-path: /path/to/nunitreporteroutput
       token: ${{ secrets.GITHUB_TOKEN }}
-	  encoding: utf-16le # optional tuning to match the output filetype for the runner
+      encoding: utf-16le # optional tuning to match the output filetype for the runner
 ```
 
 ## Publishing a New Release
