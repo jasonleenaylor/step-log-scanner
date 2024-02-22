@@ -1,4 +1,5 @@
 # FieldWorks NUnitReport results publisher action
+
 [![GitHub Super-Linter](https://github.com/jasonleenaylor/fw-nunitreport-action/actions/workflows/linter.yml/badge.svg)](https://github.com/jasonleenaylor/fw-nunitreport-action/actions/workflows/linter.yml)
 [![Continuous Integration](https://github.com/jasonleenaylor/fw-nunitreport-action/actions/workflows/ci.yml/badge.svg)](https://github.com/jasonleenaylor/fw-nunitreport-action/actions/workflows/ci.yml)
 [![CodeQL](https://github.com/jasonleenaylor/fw-nunitreport-action/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/jasonleenaylor/fw-nunitreport-action/actions/workflows/codeql-analysis.yml)
@@ -35,8 +36,7 @@ need to perform some initial setup steps before you can develop your action.
 1. :white_check_mark: Run the tests
 
    ```bash
-   $ npm test
-
+   npm test
    ```
 
 ## Publishing a new version
