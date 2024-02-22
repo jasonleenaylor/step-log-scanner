@@ -162,4 +162,45 @@ describe("generate summaries", () => {
     expect(results?.[0].annotation_level).toEqual("failure");
     expect(results?.[0].message).toEqual("FailFixture: failUnit failed.");
   });
+  it("generates trimmed annotations", () => {
+    const results = main.generateAnnotationsFromResults({
+      results: [
+        {
+          passed: 1,
+          failures: 0,
+          ignored: 3,
+          failureDetails: [],
+          fixture: "test",
+        },
+        {
+          passed: 0,
+          failures: 1,
+          ignored: 0,
+          failureDetails: [
+            {
+              fileName:
+                "C:\\Repositories\\fwroot\\fw\\Src\\Common\\FwUtils\\FwUtilsTests\\FwLinkArgsTests.cs",
+              lineInfo: 1,
+              unitName: "failUnit",
+            },
+            {
+              fileName:
+                "C:\\Repositories\\fwroot\\fw\\Lib\\Common\\FwUtils\\FwUtilsTests\\FwLinkArgsTests.cs",
+              lineInfo: 1,
+              unitName: "failUnit",
+            },
+          ],
+          fixture: "FailFixture",
+        },
+      ],
+    });
+    expect(results).not.toBeUndefined();
+    expect(results?.length).toEqual(2);
+    expect(results?.[0].path).toEqual(
+      "Src\\Common\\FwUtils\\FwUtilsTests\\FwLinkArgsTests.cs",
+    );
+    expect(results?.[1].path).toEqual(
+      "Lib\\Common\\FwUtils\\FwUtilsTests\\FwLinkArgsTests.cs",
+    );
+  });
 });

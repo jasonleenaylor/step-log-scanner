@@ -29057,7 +29057,7 @@ function generateAnnotationsFromResults(testResults) {
         if (result.failures > 0) {
             for (const failure of result.failureDetails) {
                 annotations.push({
-                    path: failure.fileName,
+                    path: trimWorkspaceDirFromPath(failure.fileName),
                     start_line: failure.lineInfo,
                     end_line: failure.lineInfo,
                     message: `${result.fixture}: ${failure.unitName} failed.`,
@@ -29069,6 +29069,13 @@ function generateAnnotationsFromResults(testResults) {
     return annotations;
 }
 exports.generateAnnotationsFromResults = generateAnnotationsFromResults;
+function trimWorkspaceDirFromPath(path) {
+    if (path.includes("\\Src\\"))
+        return path.substring(path.indexOf("\\Src\\") + 1);
+    if (path.includes("\\Lib\\"))
+        return path.substring(path.indexOf("\\Lib\\") + 1);
+    return path;
+}
 
 
 /***/ }),
