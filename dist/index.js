@@ -28973,15 +28973,12 @@ const test_results_parser_1 = __importDefault(__nccwpck_require__(6697));
 async function run() {
     try {
         const octokit = github.getOctokit(core.getInput("token"));
-        const runContext = getRunContextForCheck();
+        const head_sha = getHeadForCheck();
         const createCheckResponse = await octokit.rest.checks.create({
-            head_sha: runContext.head_sha,
+            head_sha,
             name: "Unit Test Results",
             status: "in_progress",
-            output: {
-                title: "Unit Test Results",
-                summary: "",
-            },
+            output: { title: "Unit Test Results", summary: "" },
             ...github.context.repo,
         });
         const testResultsText = fs.readFileSync(core.getInput("log-path"), 
@@ -29017,19 +29014,18 @@ async function run() {
     }
 }
 exports.run = run;
-function getRunContextForCheck() {
+function getHeadForCheck() {
     if (github.context.eventName === "workflow_run") {
         const workflowRun = github.context.payload.workflow_run;
         if (!workflowRun) {
             throw new Error("Unexpected event contents, workflow_run missing?");
         }
-        return { head_sha: workflowRun.head_commit.id, runId: workflowRun.id };
+        return workflowRun;
     }
     // assume pull request context if it isn't a workflow run
-    const runId = github.context.runId;
     const pr = github.context.payload.pull_request;
     const head_sha = pr?.head.sha ?? github.context.sha;
-    return { head_sha, runId };
+    return head_sha;
 }
 function generateShortSummaryFromResults(testResults) {
     const summaryResults = testResults.results.reduce((summary, result) => {
