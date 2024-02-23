@@ -28,7 +28,7 @@ export async function run(): Promise<void> {
       core.getInput("encoding") as BufferEncoding,
     );
     const testResults = parseTestResults(testResultsText);
-    console.log(JSON.stringify(testResults));
+    console.debug(JSON.stringify(testResults));
     await octokit.rest.checks.update({
       check_run_id: createCheckResponse.data.id,
       conclusion: testResults.results.every((t) => t.failures === 0)
@@ -55,23 +55,19 @@ export async function run(): Promise<void> {
 
 function getRunContextForCheck(): { head_sha: string; runId: number } {
   if (github.context.eventName === "workflow_run") {
-    const event = github.context.payload;
-    if (!event.workflow_run) {
+    const workflowRun = github.context.payload.workflow_run;
+    if (!workflowRun) {
       throw new Error("Unexpected event contents, workflow_run missing?");
     }
-    return {
-      head_sha: event.workflow_run.head_commit.id,
-      runId: event.workflow_run.id,
-    };
+    return { head_sha: workflowRun.head_commit.id, runId: workflowRun.id };
   }
 
+  // assume pull request context if it isn't a workflow run
   const runId = github.context.runId;
-  if (github.context.payload.pull_request) {
-    const pr = github.context.payload.pull_request;
-    return { head_sha: pr.head.sha, runId };
-  }
+  const pr = github.context.payload.pull_request;
+  const head_sha = pr?.head.sha ?? github.context.sha;
 
-  return { head_sha: github.context.sha, runId };
+  return { head_sha, runId };
 }
 
 export function generateShortSummaryFromResults(
@@ -92,6 +88,7 @@ export function generateShortSummaryFromResults(
   );
   return `Unit Test Results (${summaryResults.passed} passed, ${summaryResults.failed} failed, ${summaryResults.ignored} ignored)`;
 }
+
 export function generateSummaryFromResults(testResults: TestResults): string {
   return testResults.results
     .map(

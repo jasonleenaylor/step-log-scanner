@@ -58,7 +58,7 @@ export function parseTestResults(text: string): TestResults {
     const initMatch = line.match(initialFixtureLine);
     if (initMatch) {
       if (result) {
-        if (currentFailure) {
+        if (currentFailure.unitName !== "") {
           result.failureDetails.push(currentFailure);
         }
         testResults.push(result);

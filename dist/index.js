@@ -28989,7 +28989,7 @@ async function run() {
         // eslint-disable-next-line no-undef
         core.getInput("encoding"));
         const testResults = (0, test_results_parser_1.default)(testResultsText);
-        console.log(JSON.stringify(testResults));
+        console.debug(JSON.stringify(testResults));
         await octokit.rest.checks.update({
             check_run_id: createCheckResponse.data.id,
             conclusion: testResults.results.every((t) => t.failures === 0)
@@ -29019,21 +29019,17 @@ async function run() {
 exports.run = run;
 function getRunContextForCheck() {
     if (github.context.eventName === "workflow_run") {
-        const event = github.context.payload;
-        if (!event.workflow_run) {
+        const workflowRun = github.context.payload.workflow_run;
+        if (!workflowRun) {
             throw new Error("Unexpected event contents, workflow_run missing?");
         }
-        return {
-            head_sha: event.workflow_run.head_commit.id,
-            runId: event.workflow_run.id,
-        };
+        return { head_sha: workflowRun.head_commit.id, runId: workflowRun.id };
     }
+    // assume pull request context if it isn't a workflow run
     const runId = github.context.runId;
-    if (github.context.payload.pull_request) {
-        const pr = github.context.payload.pull_request;
-        return { head_sha: pr.head.sha, runId };
-    }
-    return { head_sha: github.context.sha, runId };
+    const pr = github.context.payload.pull_request;
+    const head_sha = pr?.head.sha ?? github.context.sha;
+    return { head_sha, runId };
 }
 function generateShortSummaryFromResults(testResults) {
     const summaryResults = testResults.results.reduce((summary, result) => {
@@ -29126,7 +29122,7 @@ function parseTestResults(text) {
         const initMatch = line.match(initialFixtureLine);
         if (initMatch) {
             if (result) {
-                if (currentFailure) {
+                if (currentFailure.unitName !== "") {
                     result.failureDetails.push(currentFailure);
                 }
                 testResults.push(result);
