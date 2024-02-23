@@ -28973,15 +28973,12 @@ const test_results_parser_1 = __importDefault(__nccwpck_require__(6697));
 async function run() {
     try {
         const octokit = github.getOctokit(core.getInput("token"));
-        const runContext = getRunContextForCheck();
+        const head_sha = getHeadForCheck();
         const createCheckResponse = await octokit.rest.checks.create({
-            head_sha: runContext.head_sha,
+            head_sha,
             name: "Unit Test Results",
             status: "in_progress",
-            output: {
-                title: "Unit Test Results",
-                summary: "",
-            },
+            output: { title: "Unit Test Results", summary: "" },
             ...github.context.repo,
         });
         const testResultsText = fs.readFileSync(core.getInput("log-path"), 
@@ -28989,7 +28986,7 @@ async function run() {
         // eslint-disable-next-line no-undef
         core.getInput("encoding"));
         const testResults = (0, test_results_parser_1.default)(testResultsText);
-        console.log(JSON.stringify(testResults));
+        console.debug(JSON.stringify(testResults));
         await octokit.rest.checks.update({
             check_run_id: createCheckResponse.data.id,
             conclusion: testResults.results.every((t) => t.failures === 0)
@@ -29017,23 +29014,17 @@ async function run() {
     }
 }
 exports.run = run;
-function getRunContextForCheck() {
+function getHeadForCheck() {
     if (github.context.eventName === "workflow_run") {
-        const event = github.context.payload;
-        if (!event.workflow_run) {
+        const workflowRun = github.context.payload.workflow_run;
+        if (!workflowRun) {
             throw new Error("Unexpected event contents, workflow_run missing?");
         }
-        return {
-            head_sha: event.workflow_run.head_commit.id,
-            runId: event.workflow_run.id,
-        };
+        return workflowRun.head_commit.id;
     }
-    const runId = github.context.runId;
-    if (github.context.payload.pull_request) {
-        const pr = github.context.payload.pull_request;
-        return { head_sha: pr.head.sha, runId };
-    }
-    return { head_sha: github.context.sha, runId };
+    // Assume pull request context if it isn't a workflow run
+    const pr = github.context.payload.pull_request;
+    return pr?.head.sha ?? github.context.sha;
 }
 function generateShortSummaryFromResults(testResults) {
     const summaryResults = testResults.results.reduce((summary, result) => {
@@ -29057,7 +29048,7 @@ function generateAnnotationsFromResults(testResults) {
         if (result.failures > 0) {
             for (const failure of result.failureDetails) {
                 annotations.push({
-                    path: failure.fileName,
+                    path: trimWorkspaceDirFromPath(failure.fileName),
                     start_line: failure.lineInfo,
                     end_line: failure.lineInfo,
                     message: `${result.fixture}: ${failure.unitName} failed.`,
@@ -29069,6 +29060,13 @@ function generateAnnotationsFromResults(testResults) {
     return annotations;
 }
 exports.generateAnnotationsFromResults = generateAnnotationsFromResults;
+function trimWorkspaceDirFromPath(path) {
+    if (path.includes("\\Src\\"))
+        return path.substring(path.indexOf("\\Src\\") + 1);
+    if (path.includes("\\Lib\\"))
+        return path.substring(path.indexOf("\\Lib\\") + 1);
+    return path;
+}
 
 
 /***/ }),
@@ -29086,9 +29084,8 @@ class TestResultInstance {
     ignored;
     passed;
     failureDetails;
-    // prettier-ignore
     constructor() {
-        this.fixture = '';
+        this.fixture = "";
         this.failures = 0;
         this.ignored = 0;
         this.passed = 0;
@@ -29099,10 +29096,9 @@ class FailureDetailInstance {
     unitName;
     fileName;
     lineInfo;
-    // prettier-ignore
     constructor() {
-        this.unitName = '';
-        this.fileName = '';
+        this.unitName = "";
+        this.fileName = "";
         this.lineInfo = 0;
     }
 }
@@ -29121,8 +29117,9 @@ function parseTestResults(text) {
         const initMatch = line.match(initialFixtureLine);
         if (initMatch) {
             if (result) {
-                if (currentFailure) {
+                if (currentFailure.unitName !== "") {
                     result.failureDetails.push(currentFailure);
+                    currentFailure = new FailureDetailInstance();
                 }
                 testResults.push(result);
             }

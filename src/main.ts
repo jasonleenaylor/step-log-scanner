@@ -10,15 +10,12 @@ import parseTestResults, { TestResults } from "./test-results-parser";
 export async function run(): Promise<void> {
   try {
     const octokit = github.getOctokit(core.getInput("token"));
-    const runContext = getRunContextForCheck();
+    const head_sha = getHeadForCheck();
     const createCheckResponse = await octokit.rest.checks.create({
-      head_sha: runContext.head_sha,
+      head_sha,
       name: "Unit Test Results",
       status: "in_progress",
-      output: {
-        title: "Unit Test Results",
-        summary: "",
-      },
+      output: { title: "Unit Test Results", summary: "" },
       ...github.context.repo,
     });
     const testResultsText = fs.readFileSync(
@@ -28,7 +25,7 @@ export async function run(): Promise<void> {
       core.getInput("encoding") as BufferEncoding,
     );
     const testResults = parseTestResults(testResultsText);
-    console.log(JSON.stringify(testResults));
+    console.debug(JSON.stringify(testResults));
     await octokit.rest.checks.update({
       check_run_id: createCheckResponse.data.id,
       conclusion: testResults.results.every((t) => t.failures === 0)
@@ -53,25 +50,18 @@ export async function run(): Promise<void> {
   }
 }
 
-function getRunContextForCheck(): { head_sha: string; runId: number } {
+function getHeadForCheck(): string {
   if (github.context.eventName === "workflow_run") {
-    const event = github.context.payload;
-    if (!event.workflow_run) {
+    const workflowRun = github.context.payload.workflow_run;
+    if (!workflowRun) {
       throw new Error("Unexpected event contents, workflow_run missing?");
     }
-    return {
-      head_sha: event.workflow_run.head_commit.id,
-      runId: event.workflow_run.id,
-    };
+    return workflowRun.head_commit.id;
   }
 
-  const runId = github.context.runId;
-  if (github.context.payload.pull_request) {
-    const pr = github.context.payload.pull_request;
-    return { head_sha: pr.head.sha, runId };
-  }
-
-  return { head_sha: github.context.sha, runId };
+  // Assume pull request context if it isn't a workflow run
+  const pr = github.context.payload.pull_request;
+  return pr?.head.sha ?? github.context.sha;
 }
 
 export function generateShortSummaryFromResults(
@@ -92,6 +82,7 @@ export function generateShortSummaryFromResults(
   );
   return `Unit Test Results (${summaryResults.passed} passed, ${summaryResults.failed} failed, ${summaryResults.ignored} ignored)`;
 }
+
 export function generateSummaryFromResults(testResults: TestResults): string {
   return testResults.results
     .map(
@@ -101,31 +92,27 @@ export function generateSummaryFromResults(testResults: TestResults): string {
     .join("\n");
 }
 
-export function generateAnnotationsFromResults(testResults: TestResults):
-  | {
-      path: string;
-      start_line: number;
-      end_line: number;
-      start_column?: number | undefined;
-      end_column?: number | undefined;
-      annotation_level: "failure" | "notice" | "warning";
-      message: string;
-      title?: string | undefined;
-      raw_details?: string | undefined;
-    }[]
-  | undefined {
-  const annotations: {
-    path: string;
-    start_line: number;
-    end_line: number;
-    annotation_level: "failure" | "notice" | "warning";
-    message: string;
-  }[] = [];
+type GithubAnnotation = {
+  path: string;
+  start_line: number;
+  end_line: number;
+  start_column?: number;
+  end_column?: number;
+  annotation_level: "failure" | "notice" | "warning";
+  message: string;
+  title?: string;
+  raw_details?: string;
+};
+
+export function generateAnnotationsFromResults(
+  testResults: TestResults,
+): GithubAnnotation[] | undefined {
+  const annotations: GithubAnnotation[] = [];
   for (const result of testResults.results) {
     if (result.failures > 0) {
       for (const failure of result.failureDetails) {
         annotations.push({
-          path: failure.fileName,
+          path: trimWorkspaceDirFromPath(failure.fileName),
           start_line: failure.lineInfo,
           end_line: failure.lineInfo,
           message: `${result.fixture}: ${failure.unitName} failed.`,
@@ -135,4 +122,12 @@ export function generateAnnotationsFromResults(testResults: TestResults):
     }
   }
   return annotations;
+}
+
+function trimWorkspaceDirFromPath(path: string): string {
+  if (path.includes("\\Src\\"))
+    return path.substring(path.indexOf("\\Src\\") + 1);
+  if (path.includes("\\Lib\\"))
+    return path.substring(path.indexOf("\\Lib\\") + 1);
+  return path;
 }

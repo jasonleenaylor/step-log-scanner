@@ -1,7 +1,4 @@
-import parseTestResults, {
-  FailureDetail,
-  TestResults,
-} from "../src/test-results-parser";
+import parseTestResults, { FailureDetail } from "../src/test-results-parser";
 import * as fs from "fs";
 
 describe("parse test results", () => {
@@ -9,9 +6,9 @@ describe("parse test results", () => {
     const text = fs.readFileSync("./__tests__/success-test-data.txt", {
       encoding: "utf-8",
     });
-    const parsedData: TestResults | null = parseTestResults(text);
+    const parsedData = parseTestResults(text);
 
-    expect(parsedData).not.toBeNull();
+    expect(parsedData.results).toHaveLength(1);
     expect(parsedData.results[0].fixture).toBe("ITextDllTests.dll");
     expect(parsedData.results[0].failures).toBe(0);
     expect(parsedData.results[0].ignored).toBe(4);
@@ -24,9 +21,9 @@ describe("parse test results", () => {
       "./__tests__/exception-failed-test-data.txt",
       "utf-8",
     );
-    const parsedData: TestResults | null = parseTestResults(text);
+    const parsedData = parseTestResults(text);
 
-    expect(parsedData).not.toBeNull();
+    expect(parsedData.results).toHaveLength(2);
     expect(parsedData.results[0].fixture).toBe("ParatextImportTests.dll");
     expect(parsedData.results[0].failures).toBe(1);
     expect(parsedData.results[0].ignored).toBe(40);
@@ -52,9 +49,9 @@ describe("parse test results", () => {
       "./__tests__/asserts-failed-test-data.txt",
       "utf-8",
     );
-    const parsedData: TestResults | null = parseTestResults(text);
+    const parsedData = parseTestResults(text);
 
-    expect(parsedData).not.toBeNull();
+    expect(parsedData.results).toHaveLength(2);
     expect(parsedData.results[0].fixture).toBe("FwUtilsTests.dll");
     expect(parsedData.results[0].failures).toBe(2);
     expect(parsedData.results[0].ignored).toBe(7);
@@ -85,9 +82,9 @@ describe("parse test results", () => {
       "./__tests__/cplusplus-failed-test-data.txt",
       "utf-8",
     );
-    const parsedData: TestResults | null = parseTestResults(text);
+    const parsedData = parseTestResults(text);
 
-    expect(parsedData).not.toBeNull();
+    expect(parsedData.results).toHaveLength(1);
     expect(parsedData.results[0].fixture).toBe("testViews");
     expect(parsedData.results[0].failures).toBe(3);
     expect(parsedData.results[0].ignored).toBe(0);
