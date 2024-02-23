@@ -60,6 +60,7 @@ export function parseTestResults(text: string): TestResults {
       if (result) {
         if (currentFailure.unitName !== "") {
           result.failureDetails.push(currentFailure);
+          currentFailure = new FailureDetailInstance();
         }
         testResults.push(result);
       }

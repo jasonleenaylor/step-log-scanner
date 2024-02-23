@@ -25,11 +25,7 @@ jest.mock("@actions/github", () => ({
   },
   context: {
     runId: "1",
-    payload: {
-      pull_request: {
-        head: { sha: "abcadaba" },
-      },
-    },
+    payload: { pull_request: { head: { sha: "abcadaba" } } },
   },
 }));
 
@@ -106,6 +102,7 @@ describe("generate summaries", () => {
     expect(summary).toContain("2 failed");
     expect(summary).toContain("3 ignored");
   });
+
   it("generates correct full summary from results", () => {
     const summary = main.generateSummaryFromResults({
       results: [
@@ -128,6 +125,7 @@ describe("generate summaries", () => {
     expect(summary).toContain("test: 1 Passed, 0 Failed, 3 Ignored");
     expect(summary).toContain("FailFixture: 0 Passed, 1 Failed, 0 Ignored");
   });
+
   it("generates Annotations from results", () => {
     const annotations = main.generateAnnotationsFromResults({
       results: [
@@ -156,6 +154,7 @@ describe("generate summaries", () => {
     expect(annotations?.[0].annotation_level).toEqual("failure");
     expect(annotations?.[0].message).toEqual("FailFixture: failUnit failed.");
   });
+
   it("generates trimmed annotations", () => {
     const results = main.generateAnnotationsFromResults({
       results: [

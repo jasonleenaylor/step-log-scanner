@@ -56,14 +56,12 @@ function getHeadForCheck(): string {
     if (!workflowRun) {
       throw new Error("Unexpected event contents, workflow_run missing?");
     }
-    return workflowRun;
+    return workflowRun.head_commit.id;
   }
 
-  // assume pull request context if it isn't a workflow run
+  // Assume pull request context if it isn't a workflow run
   const pr = github.context.payload.pull_request;
-  const head_sha = pr?.head.sha ?? github.context.sha;
-
-  return head_sha;
+  return pr?.head.sha ?? github.context.sha;
 }
 
 export function generateShortSummaryFromResults(
