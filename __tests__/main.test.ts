@@ -196,4 +196,39 @@ describe("generate summaries", () => {
       "Lib\\Common\\FwUtils\\FwUtilsTests\\FwLinkArgsTests.cs",
     );
   });
+
+  it("limits annotations to 50", () => {
+    const testData: {
+      passed: number;
+      failures: number;
+      ignored: number;
+      failureDetails: {
+        fileName: string;
+        lineInfo: number;
+        unitName: string;
+      }[];
+      fixture: string;
+    }[] = [];
+    for (let i = 0; i < 51; ++i) {
+      const data = {
+        passed: 0,
+        failures: 1,
+        ignored: 0,
+        failureDetails: [
+          {
+            fileName: `C:\\Repositories\\fwroot\\fw\\Src\\Common\\FwUtils\\FwUtilsTests\\FwLinkArgsTests${i}.cs`,
+            lineInfo: 1,
+            unitName: "failUnit",
+          },
+        ],
+        fixture: "FailFixture",
+      };
+      testData.push(data);
+    }
+    const results = main.generateAnnotationsFromResults({
+      results: testData,
+    });
+    expect(results).not.toBeUndefined();
+    expect(results?.length).toEqual(50);
+  });
 });

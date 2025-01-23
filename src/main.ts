@@ -104,6 +104,11 @@ type GithubAnnotation = {
   raw_details?: string;
 };
 
+/**
+ * Generates annotations for the GitHub Actions UI.
+ * @param testResults The test results to generate annotations for.
+ * @returns An array of annotations limited to 50 items.
+ */
 export function generateAnnotationsFromResults(
   testResults: TestResults,
 ): GithubAnnotation[] | undefined {
@@ -121,7 +126,7 @@ export function generateAnnotationsFromResults(
       }
     }
   }
-  return annotations;
+  return annotations.slice(0, 50); // GitHub only allows 50 annotations
 }
 
 function trimWorkspaceDirFromPath(path: string): string {
